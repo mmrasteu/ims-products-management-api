@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Models\Product;
@@ -29,7 +28,7 @@ class ProductController extends Controller
      */
     public function filter(Request $request)
     {
-        // Validar los datos del filtro
+        // Validate filter data
         $validator = Validator::make($request->all(), [
             'name'                  => 'max:255', 
             'sku_code'              => 'max:255',
@@ -44,16 +43,16 @@ class ProductController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos del filtro',
+                'message' => 'Error validating filter data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Construir la consulta de productos filtrados
+        // Build filtered products query
         $query = Product::query();
 
-        // Aplicar filtros
+        // Apply filters
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
@@ -90,11 +89,11 @@ class ProductController extends Controller
             $query->where('supplier_id', $request->input('supplier_id'));
         }
 
-        // Ejecutar la consulta y obtener los productos filtrados
+        // Execute query and get filtered products
         $filteredProducts = $query->get();
 
         return response()->json([
-            'message' => 'Productos filtrados obtenidos correctamente',
+            'message' => 'Filtered products retrieved successfully',
             'products' => $filteredProducts,
             'status' => 200
         ], 200);
@@ -108,7 +107,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
@@ -117,7 +116,7 @@ class ProductController extends Controller
 
         if (!$product_category) {
             return response()->json([
-                'message' => 'Categoria no encontrada',
+                'message' => 'Category not found',
                 'status' => 404
             ], 404);
         }
@@ -126,8 +125,6 @@ class ProductController extends Controller
             'product_category' => $product_category,
             'status' => 200
         ], 200);
-
-
     }
 
     /**
@@ -138,7 +135,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
@@ -147,7 +144,7 @@ class ProductController extends Controller
 
         if (!$product_supplier) {
             return response()->json([
-                'message' => 'Proveedor no encontrada',
+                'message' => 'Supplier not found',
                 'status' => 404
             ], 404);
         }
@@ -156,8 +153,6 @@ class ProductController extends Controller
             'product_supplier' => $product_supplier,
             'status' => 200
         ], 200);
-
-
     }
 
     /**
@@ -181,7 +176,7 @@ class ProductController extends Controller
             
 
             return response()->json([
-                'message' => 'Error en la validacion de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
@@ -201,7 +196,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Error al crear el producto',
+                'message' => 'Error creating product',
                 'status' => 500
             ], 500);
         }
@@ -221,7 +216,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
@@ -242,7 +237,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
@@ -261,7 +256,7 @@ class ProductController extends Controller
 
         if ($validator->fails()){
             return response()->json([
-                'message' => 'Error en la validacion de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
@@ -279,9 +274,9 @@ class ProductController extends Controller
             'supplier_id'           => $request->supplier_id
         ]);
     
-        // Enviar la respuesta JSON
+        // Return JSON response
         return response()->json([
-            'message' => 'Producto actualizado',
+            'message' => 'Product updated',
             'product' => $product,
             'status' => 200
         ], 200);
@@ -297,14 +292,14 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
 
         $validator = Validator::make($request->all(), [
             'name'                  => 'max:255', 
-            'sku_code'              => 'max:255|unique:products,sku_code,' . $id, // Asegúrate de excluir el ID actual del producto de la regla unique
+            'sku_code'              => 'max:255|unique:products,sku_code,' . $id, // Make sure to exclude the current product ID from unique rule
             'description'           => 'string', 
             'price'                 => 'numeric', 
             'cost_price'            => 'numeric', 
@@ -316,18 +311,18 @@ class ProductController extends Controller
 
         if ($validator->fails()){
             return response()->json([
-                'message' => 'Error en la validacion de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Actualizar el producto con los datos validados
+        // Update product with validated data
         $product->fill($request->validated());
         $product->save();
 
         return response()->json([
-            'message' => 'Producto actualizado',
+            'message' => 'Product updated',
             'product' => $product,
             'status' => 200
         ], 200);
@@ -342,7 +337,7 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Producto no encontrado',
+                'message' => 'Product not found',
                 'status' => 404
             ], 404);
         }
@@ -350,7 +345,7 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json([
-            'message' => 'Producto eliminado correctamente',
+            'message' => 'Product deleted successfully',
             'status' => 200
         ], 200);
         

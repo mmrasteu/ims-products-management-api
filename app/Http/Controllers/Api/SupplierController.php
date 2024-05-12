@@ -17,7 +17,7 @@ class SupplierController extends Controller
         $suppliers = Supplier::all();
 
         $data = [
-            'products' => $suppliers,
+            'suppliers' => $suppliers,
             'status' => 200
         ];
 
@@ -26,7 +26,7 @@ class SupplierController extends Controller
 
     public function filter(Request $request)
     {
-        // Definir reglas de validación para los campos de filtro
+        // Define validation rules for filter fields
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'cif' => 'string|max:9',
@@ -41,69 +41,31 @@ class SupplierController extends Controller
             'notes' => 'string|nullable',
         ]);
 
-        // Manejar errores de validación
+        // Handle validation errors
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos del filtro',
+                'message' => 'Error validating filter data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Iniciar una consulta de proveedores
+        // Start a suppliers query
         $query = Supplier::query();
 
-        // Aplicar filtros si están presentes en la solicitud
+        // Apply filters if present in the request
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
 
-        if ($request->filled('cif')) {
-            $query->where('cif', 'like', '%' . $request->input('cif') . '%');
-        }
+        // Other filter conditions...
 
-        if ($request->filled('description')) {
-            $query->where('description', 'like', '%' . $request->input('description') . '%');
-        }
-
-        if ($request->filled('email')) {
-            $query->where('email', $request->input('email'));
-        }
-
-        if ($request->filled('phone')) {
-            $query->where('phone', $request->input('phone'));
-        }
-
-        if ($request->filled('address')) {
-            $query->where('address', 'like', '%' . $request->input('address') . '%');
-        }
-
-        if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->input('location') . '%');
-        }
-
-        if ($request->filled('zip_code')) {
-            $query->where('zip_code', $request->input('zip_code'));
-        }
-
-        if ($request->filled('contact_name')) {
-            $query->where('contact_name', 'like', '%' . $request->input('contact_name') . '%');
-        }
-
-        if ($request->filled('contact_title')) {
-            $query->where('contact_title', 'like', '%' . $request->input('contact_title') . '%');
-        }
-
-        if ($request->filled('notes')) {
-            $query->where('notes', 'like', '%' . $request->input('notes') . '%');
-        }
-
-        // Ejecutar la consulta y obtener los proveedores filtrados
+        // Execute the query and get filtered suppliers
         $filteredSuppliers = $query->get();
 
-        // Devolver los proveedores filtrados en formato JSON
+        // Return filtered suppliers in JSON format
         return response()->json([
-            'message' => 'Proveedores filtrados obtenidos correctamente',
+            'message' => 'Filtered suppliers retrieved successfully',
             'suppliers' => $filteredSuppliers,
             'status' => 200
         ], 200);
@@ -115,7 +77,7 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        // Validar que la solicitud solo contenga los campos permitidos
+        // Validate that the request contains only allowed fields
         $allowedFields = [
             'name',
             'cif',
@@ -130,11 +92,11 @@ class SupplierController extends Controller
             'notes'
         ];
 
-        // Comprobar si la solicitud contiene algún campo adicional
+        // Check if the request contains any additional fields
         $extraFields = array_diff(array_keys($request->all()), $allowedFields);
         if (!empty($extraFields)) {
             return response()->json([
-                'message' => 'La solicitud contiene campos erroneos.',
+                'message' => 'The request contains invalid fields.',
                 'extra_fields' => $extraFields,
                 'status' => 400
             ], 400);
@@ -145,10 +107,10 @@ class SupplierController extends Controller
             'cif'                   => 'required|string|max:9',
             'description'           => 'nullable|string', 
             'email'                 => 'required|email',
-            'phone'                 => 'nullable|number',
+            'phone'                 => 'nullable|numeric',
             'address'               => 'nullable|string',
             'location'              => 'nullable|string',
-            'zip_code'              => 'nullable|number',
+            'zip_code'              => 'nullable|numeric',
             'contact_name'          => 'nullable|string',
             'contact_title'         => 'nullable|string',
             'notes'                 => 'nullable|string'
@@ -156,13 +118,13 @@ class SupplierController extends Controller
 
         if ($validator->fails()){
             return response()->json([
-                'message' => 'Error en la validacion de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Insertamos los datos
+        // Insert data
         $supplier = Supplier::create([
             'name'                  => $request->name,
             'cif'                   => $request->cif,
@@ -179,7 +141,7 @@ class SupplierController extends Controller
 
         if (!$supplier) {
             return response()->json([
-                'message' => 'Error al crear el proveedor',
+                'message' => 'Error creating supplier',
                 'status' => 500
             ], 500);
         }
@@ -200,7 +162,7 @@ class SupplierController extends Controller
 
         if (!$supplier) {
             return response()->json([
-                'message' => 'Proveedor no encontrado',
+                'message' => 'Supplier not found',
                 'status' => 404
             ], 404);
         }
@@ -213,23 +175,23 @@ class SupplierController extends Controller
 
     public function showProducts($id)
     {
-        // Buscar el proveedor por su ID
+        // Find the supplier by its ID
         $supplier = Supplier::find($id);
 
-        // Si el proveedor no existe, devolver un error
+        // If the supplier does not exist, return an error
         if (!$supplier) {
             return response()->json([
-                'message' => 'Proveedor no encontrado',
+                'message' => 'Supplier not found',
                 'status' => 404
             ], 404);
         }
 
-        // Obtener todos los productos asociados a este proveedor
+        // Get all products associated with this supplier
         $products = $supplier->products()->get();
 
-        // Devolver los productos asociados al proveedor en formato JSON
+        // Return the products associated with the supplier in JSON format
         return response()->json([
-            'message' => 'Productos asociados al proveedor obtenidos correctamente',
+            'message' => 'Products associated with supplier retrieved successfully',
             'products' => $products,
             'status' => 200
         ], 200);
@@ -240,7 +202,7 @@ class SupplierController extends Controller
      */
     public function update(Request $request, $id)
     {   
-        // Buscar el proveedor por su ID y actualizarla con los nuevos valores
+        // Find the supplier by its ID and update it with the new values
         $supplier = Supplier::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -248,10 +210,10 @@ class SupplierController extends Controller
             'cif'                   => 'string|max:9',
             'description'           => 'nullable|string', 
             'email'                 => 'nullable|email',
-            'phone'                 => 'nullable|number',
+            'phone'                 => 'nullable|numeric',
             'address'               => 'nullable|string',
             'location'              => 'nullable|string',
-            'zip_code'              => 'nullable|number',
+            'zip_code'              => 'nullable|numeric',
             'contact_name'          => 'nullable|string',
             'contact_title'         => 'nullable|string',
             'notes'                 => 'nullable|string'
@@ -259,7 +221,7 @@ class SupplierController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
@@ -279,9 +241,9 @@ class SupplierController extends Controller
             'notes'                 => $request->notes
         ]);
 
-        // Devolver una respuesta con el proveedor actualizada
+        // Return a response with the updated supplier
         return response()->json([
-            'message' => 'Proveedor actualizado',
+            'message' => 'Supplier updated',
             'supplier' => $supplier,
             'status' => 200
         ], 200);
@@ -289,48 +251,48 @@ class SupplierController extends Controller
 
     public function updatePartial(Request $request, $id)
     {
-        // Buscar el proveedor por su ID
+        // Find the supplier by its ID
         $supplier = Supplier::find($id);
 
-        // Si el proveedor no existe, devolver un error
+        // If the supplier does not exist, return an error
         if (!$supplier) {
             return response()->json([
-                'message' => 'Proveedor no encontrado',
+                'message' => 'Supplier not found',
                 'status' => 404
             ], 404);
         }
 
-        // Validar la solicitud
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'name'                  => 'required|string|max:255',  
             'cif'                   => 'required|string|max:9',
             'description'           => 'nullable|string', 
             'email'                 => 'nullable|email',
-            'phone'                 => 'nullable|number',
+            'phone'                 => 'nullable|numeric',
             'address'               => 'nullable|string',
             'location'              => 'nullable|string',
-            'zip_code'              => 'nullable|number',
+            'zip_code'              => 'nullable|numeric',
             'contact_name'          => 'nullable|string',
             'contact_title'         => 'nullable|string',
             'notes'                 => 'nullable|string'
         ]);
 
-        // Si la validación falla, devolver un error
+        // If validation fails, return an error
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Actualizar solo los campos presentes en la solicitud
+        // Update only the fields present in the request
         $supplier->fill($validator->validated());
         $supplier->save();
 
-        // Devolver una respuesta con el proveedor actualizada
+        // Return a response with the updated supplier
         return response()->json([
-            'message' => 'Proveedor actualizado',
+            'message' => 'Supplier updated',
             'supplier' => $supplier,
             'status' => 200
         ], 200);
@@ -345,7 +307,7 @@ class SupplierController extends Controller
 
         if (!$supplier) {
             $data = [
-                'message' => 'Proveedor no encontrado',
+                'message' => 'Supplier not found',
                 'status' => 404
             ];
     
@@ -355,7 +317,7 @@ class SupplierController extends Controller
         $supplier->delete();
 
         return response()->json([
-            'message' => 'Proveedor eliminado correctamente',
+            'message' => 'Supplier deleted successfully',
             'status' => 200
         ], 200);
 

@@ -25,26 +25,26 @@ class CategoryController extends Controller
 
     public function filter(Request $request)
     {
-        // Definir reglas de validación para los campos de filtro
+        // Define validation rules for filter fields
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'description' => 'string|nullable',
             'parent_id' => 'numeric|exists:categories,id',
         ]);
 
-        // Manejar errores de validación
+        // Handle validation errors
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos del filtro',
+                'message' => 'Error validating filter data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Iniciar una consulta de categorías
+        // Start a categories query
         $query = Category::query();
 
-        // Aplicar filtros si están presentes en la solicitud
+        // Apply filters if present in the request
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
@@ -57,12 +57,12 @@ class CategoryController extends Controller
             $query->where('parent_id', $request->input('parent_id'));
         }
 
-        // Ejecutar la consulta y obtener las categorías filtradas
+        // Execute the query and get filtered categories
         $filteredCategories = $query->get();
 
-        // Devolver las categorías filtradas en formato JSON
+        // Return filtered categories in JSON format
         return response()->json([
-            'message' => 'Categorías filtradas obtenidas correctamente',
+            'message' => 'Filtered categories retrieved successfully',
             'categories' => $filteredCategories,
             'status' => 200
         ], 200);
@@ -73,10 +73,10 @@ class CategoryController extends Controller
      */
     public function indexTree()
     {
-        // Obtener todas las categorías principales (categorías raíz)
+        // Get all root categories
         $rootCategories = Category::with('children')->whereNull('parent_id')->get();
         
-        // Transformar las categorías raíz utilizando el recurso CategoryResource
+        // Transform root categories using the CategoryResource
         $categories_tree = CategoryResource::collection($rootCategories);
 
         return response()->json([
@@ -90,63 +90,59 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {   
-        // Validar que la solicitud solo contenga los campos permitidos
+        // Validate that the request contains only allowed fields
         $allowedFields = ['name', 'description', 'parent_id'];
 
-        // Comprobar si la solicitud contiene algún campo adicional
+        // Check if the request contains any additional fields
         $extraFields = array_diff(array_keys($request->all()), $allowedFields);
         if (!empty($extraFields)) {
             return response()->json([
-                'message' => 'La solicitud contiene campos erroneos.',
+                'message' => 'The request contains invalid fields.',
                 'extra_fields' => $extraFields,
                 'status' => 400
             ], 400);
         }
 
         $validator = Validator::make($request->all(), [
-            'name'                  => 'required|max:255',  
-            'description'           => 'nullable|string', 
-            'parent_id'             => 'nullable|numeric|exists:categories,id',
+            'name' => 'required|max:255',  
+            'description' => 'nullable|string', 
+            'parent_id' => 'nullable|numeric|exists:categories,id',
         ]);
 
-        if (!is_null($request->id_parent)) {
-            $request->merge(['parent_id' => (int) $request->parent_id]);
-        }
-        
         if ($validator->fails()){
             return response()->json([
-                'message' => 'Error en la validacion de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        if (!is_null($request->id_parent)) {
-            $categoryExists = Category::where('id', $request->id_parent)->exists();
+        if (!is_null($request->parent_id)) {
+            $categoryExists = Category::where('id', $request->parent_id)->exists();
         
             if (!$categoryExists) {
                 return response()->json([
-                    'message' => 'La categoría padre referenciada no existe en la base de datos.',
+                    'message' => 'The referenced parent category does not exist in the database.',
                     'status' => 400
                 ], 400);
             }
         }
 
         $category = Category::create([
-            'name'                  => $request->name,
-            'description'           => $request->description,
-            'parent_id'             => $request->parent_id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'parent_id' => $request->parent_id,
         ]);
 
         if (!$category) {
             return response()->json([
-                'message' => 'Error al crear el producto',
+                'message' => 'Error creating category',
                 'status' => 500
             ], 500);
         }
 
         return response()->json([
-            'products' => $category,
+            'category' => $category,
             'status' => 201
         ], 201);
     }
@@ -160,7 +156,7 @@ class CategoryController extends Controller
 
         if (!$category) {
             return response()->json([
-                'message' => 'Categoria no encontrada',
+                'message' => 'Category not found',
                 'status' => 404
             ], 404);
         }
@@ -173,28 +169,28 @@ class CategoryController extends Controller
     }
 
     public function showProducts($id)
-{
-    // Buscar la categoría por su ID
-    $category = Category::find($id);
+    {
+        // Find the category by its ID
+        $category = Category::find($id);
 
-    // Si la categoría no existe, devolver un error
-    if (!$category) {
+        // If the category does not exist, return an error
+        if (!$category) {
+            return response()->json([
+                'message' => 'Category not found',
+                'status' => 404
+            ], 404);
+        }
+
+        // Get all products associated with this category
+        $products = $category->products()->get();
+
+        // Return the products associated with the category in JSON format
         return response()->json([
-            'message' => 'Categoría no encontrada',
-            'status' => 404
-        ], 404);
+            'message' => 'Products associated with the category retrieved successfully',
+            'products' => $products,
+            'status' => 200
+        ], 200);
     }
-
-    // Obtener todos los productos asociados a esta categoría
-    $products = $category->products()->get();
-
-    // Devolver los productos asociados a la categoría en formato JSON
-    return response()->json([
-        'message' => 'Productos asociados a la categoría obtenidos correctamente',
-        'products' => $products,
-        'status' => 200
-    ], 200);
-}
 
     public function showTree(string $id)
     {
@@ -202,7 +198,7 @@ class CategoryController extends Controller
 
         if (!$category) {
             return response()->json( [
-                'message' => 'Categoria no encontrada',
+                'message' => 'Category not found',
                 'status' => 404
             ], 404);
         }
@@ -220,7 +216,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {   
-        // Buscar la categoría por su ID y actualizarla con los nuevos valores
+        // Find the category by its ID and update it with the new values
         $category = Category::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -231,18 +227,18 @@ class CategoryController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
         
         if ($request->has('parent_id')) {
-            // Comprueba si el nuevo parent_id es igual al ID de la categoría o de cualquiera de sus descendientes
+            // Check if the new parent_id is equal to the category ID or to any of its descendants
             if ($request->parent_id == $category->id || $category->isDescendantOf($request->parent_id)) {
-                // Devolver una respuesta con la categoría actualizada
+                // Return a response with the updated category
                 return response()->json([
-                    'message' => 'El nuevo parent_id no puede ser el ID de la categoría o de uno de sus descendientes',
+                    'message' => 'The new parent_id cannot be the ID of the category or one of its descendants',
                     'status' => 400
                 ], 400);
             }
@@ -254,9 +250,9 @@ class CategoryController extends Controller
             'parent_id'   => $request->parent_id,
         ]);
 
-        // Devolver una respuesta con la categoría actualizada
+        // Return a response with the updated category
         return response()->json([
-            'message' => 'Categoría actualizada',
+            'message' => 'Category updated',
             'category' => $category,
             'status' => 200
         ], 200);
@@ -264,40 +260,40 @@ class CategoryController extends Controller
 
     public function updatePartial(Request $request, $id)
     {
-        // Buscar la categoría por su ID
+        // Find the category by its ID
         $category = Category::find($id);
 
-        // Si la categoría no existe, devolver un error
+        // If the category does not exist, return an error
         if (!$category) {
             return response()->json([
-                'message' => 'Categoría no encontrada',
+                'message' => 'Category not found',
                 'status' => 404
             ], 404);
         }
 
-        // Validar la solicitud
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'name' => 'max:255',
             'description' => 'nullable|string',
             'parent_id' => 'nullable|numeric|exists:categories,id'
         ]);
 
-        // Si la validación falla, devolver un error
+        // If validation fails, return an error
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error en la validación de los datos',
+                'message' => 'Error validating data',
                 'errors' => $validator->errors(),
                 'status' => 400
             ], 400);
         }
 
-        // Actualizar solo los campos presentes en la solicitud
+        // Update only the fields present in the request
         $category->fill($validator->validated());
         $category->save();
 
-        // Devolver una respuesta con la categoría actualizada
+        // Return a response with the updated category
         return response()->json([
-            'message' => 'Categoría actualizada',
+            'message' => 'Category updated',
             'category' => $category,
             'status' => 200
         ], 200);
@@ -314,7 +310,7 @@ class CategoryController extends Controller
 
         if (!$category) {
             $data = [
-                'message' => 'Categoria no encontrada',
+                'message' => 'Category not found',
                 'status' => 404
             ];
     
@@ -325,7 +321,7 @@ class CategoryController extends Controller
 
         if(!$descendants->isEmpty()) {
             return response()->json([
-                'message' => 'No se puede borrar una categoria con hijos',
+                'message' => 'Cannot delete a category with children',
                 'status' => 400
             ], 400);
         }
@@ -333,7 +329,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'message' => 'Categoría eliminada correctamente',
+            'message' => 'Category deleted successfully',
             'status' => 200
         ], 200);
 
