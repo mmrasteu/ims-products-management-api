@@ -14,6 +14,9 @@ Route::get('/status', function () {
 // Product routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/products/{id}/category', [ProductController::class, 'showCategory']);
+Route::get('/products/{id}/supplier', [ProductController::class, 'showSupplier']);
+Route::post('/products/filter', [ProductController::class, 'filter']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::patch('/products/{id}', [ProductController::class, 'updatePartial']);
@@ -23,17 +26,18 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/tree', [CategoryController::class, 'indexTree']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
-Route::get('/categories/tree/{id}', [CategoryController::class, 'showTree']);
+Route::get('/categories/{id}/products', [CategoryController::class, 'showProducts']);
+Route::get('/categories/{id}/tree', [CategoryController::class, 'showTree']);
 Route::post('/categories', [CategoryController::class, 'store']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::patch('/categories/{id}', [CategoryController::class, 'updatePartial']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 // Supplier routes
-Route::get('/supplier', [SupplierController::class, 'index']);
-Route::get('/supplier/{id}', [SupplierController::class, 'show']);
-Route::post('/supplier', [SupplierController::class, 'store']);
-Route::put('/supplier/{id}', [SupplierController::class, 'update']);
-Route::patch('/supplier/{id}', [CategoryController::class, 'updatePartial']);
-Route::delete('/supplier/{id}', [SupplierController::class, 'destroy']);
-
+Route::get('/suppliers', [SupplierController::class, 'index']);
+Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
+Route::get('/suppliers/{id}/products', [SupplierController::class, 'showProducts']);
+Route::post('/suppliers', [SupplierController::class, 'store']);
+Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
+Route::patch('/suppliers/{id}', [CategoryController::class, 'updatePartial']);
+Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
