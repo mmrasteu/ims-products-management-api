@@ -22,14 +22,14 @@ return new class extends Migration
             $table->json('additional_features');
             $table->timestamps();
 
-            // Relacion con Categories
+            // Categories relationship
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')
                 ->references('id')
                 ->on('categories')
                 ->onDelete('cascade');
 
-            // Relacion con Suppliers
+            // Suppliers relationship
             $table->unsignedBigInteger('supplier_id');
             $table->foreign('supplier_id')
                 ->references('id')
