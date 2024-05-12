@@ -23,6 +23,51 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    public function filter(Request $request)
+    {
+        // Definir reglas de validación para los campos de filtro
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'description' => 'string|nullable',
+            'parent_id' => 'numeric|exists:categories,id',
+        ]);
+
+        // Manejar errores de validación
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de los datos del filtro',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
+        }
+
+        // Iniciar una consulta de categorías
+        $query = Category::query();
+
+        // Aplicar filtros si están presentes en la solicitud
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->input('description') . '%');
+        }
+
+        if ($request->filled('parent_id')) {
+            $query->where('parent_id', $request->input('parent_id'));
+        }
+
+        // Ejecutar la consulta y obtener las categorías filtradas
+        $filteredCategories = $query->get();
+
+        // Devolver las categorías filtradas en formato JSON
+        return response()->json([
+            'message' => 'Categorías filtradas obtenidas correctamente',
+            'categories' => $filteredCategories,
+            'status' => 200
+        ], 200);
+    }
+
     /**
      * Display a tree of the resource.
      */
@@ -126,6 +171,30 @@ class CategoryController extends Controller
             'status' => 200
         ], 200);
     }
+
+    public function showProducts($id)
+{
+    // Buscar la categoría por su ID
+    $category = Category::find($id);
+
+    // Si la categoría no existe, devolver un error
+    if (!$category) {
+        return response()->json([
+            'message' => 'Categoría no encontrada',
+            'status' => 404
+        ], 404);
+    }
+
+    // Obtener todos los productos asociados a esta categoría
+    $products = $category->products()->get();
+
+    // Devolver los productos asociados a la categoría en formato JSON
+    return response()->json([
+        'message' => 'Productos asociados a la categoría obtenidos correctamente',
+        'products' => $products,
+        'status' => 200
+    ], 200);
+}
 
     public function showTree(string $id)
     {
@@ -264,7 +333,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'message' => 'Producto eliminado correctamente',
+            'message' => 'Categoría eliminada correctamente',
             'status' => 200
         ], 200);
 
