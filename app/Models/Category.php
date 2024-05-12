@@ -17,7 +17,7 @@ class Category extends Model
         'parent_id',
     ];
 
-    // Relacion 1:n (category-products)
+    // 1:n Relationship (category-products)
     public function products()
     {
         return $this->hasMany(Product::class);
@@ -30,10 +30,10 @@ class Category extends Model
 
     public function descendants()
     {
-        // Inicializar una colección para almacenar los descendientes
+        // Initialize a collection to store the descendants
         $descendants = collect();
 
-        // Obtener todos los descendientes de manera recursiva
+        // Get all descendants recursively
         $this->appendDescendants($descendants);
 
         return $descendants;
@@ -41,10 +41,10 @@ class Category extends Model
 
     protected function appendDescendants(&$descendants)
     {
-        // Obtener todos los hijos de esta categoría
+        // Get all children of this category
         $children = $this->children;
 
-        // Recorrer los hijos y añadirlos a la colección de descendientes
+        // Iterate over children and add them to the descendants collection
         foreach ($children as $child) {
             $descendants->push($child);
             $child->appendDescendants($descendants);
@@ -53,15 +53,14 @@ class Category extends Model
 
     public function isDescendantOf($parent_id)
     {
-        // Obtener la categoría actual
+        // Get the current category
         $category = Category::find($this->id);
 
-        // Obtener todos los descendientes de la categoría
+        // Get all descendants of the category
         $descendants = $category->descendants();
 
-        // Verificar si $parent_id está en la colección de descendientes
+        // Check if $parent_id is in the descendants collection
         return $descendants->contains('id', $parent_id);
     }
 
 }
-

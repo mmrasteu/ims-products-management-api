@@ -43,13 +43,13 @@ class Product extends Model
         ];
     }
 
-    // Relacion 1:n inversa (product-category)
+    // Inverse 1:n Relationship (product-category)
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Relacion 1:n inversa (product-supplier)
+    // Inverse 1:n Relationship (product-supplier)
     public function supplier()
     {
         return $this->belongsTo(Category::class);

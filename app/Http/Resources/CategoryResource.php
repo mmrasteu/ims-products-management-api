@@ -22,11 +22,11 @@ class CategoryResource extends JsonResource
         $descendants = collect();
 
         foreach ($category->children as $child) {
-            // Crear un nuevo recurso de categoría para el hijo y añadirlo a la colección
+            // Create a new category resource for the child and add it to the collection
             $descendants->push(new CategoryResource($child));
 
-            // Llamar recursivamente a la función para obtener los descendientes del hijo
-            // y asignarlos a la propiedad 'children' del recurso del hijo
+            // Recursively call the function to get the descendants of the child
+            // and assign them to the 'children' property of the child resource
             $child->children = $this->descendantsRecursive($child);
         }
 

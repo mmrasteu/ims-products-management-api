@@ -24,7 +24,7 @@ class Supplier extends Model
         'notes'
     ];
 
-    // Relacion 1:n (category-products)
+    // 1:n Relationship (category-products)
     public function products()
     {
         return $this->hasMany(Product::class);
