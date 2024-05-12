@@ -24,6 +24,8 @@ class Product extends Model
         'cost_price', 
         'status', 
         'additional_features',
+        'category_id',
+        'supplier_id'
     ];
 
     /**
