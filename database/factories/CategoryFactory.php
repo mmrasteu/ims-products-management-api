@@ -28,7 +28,7 @@ class CategoryFactory extends Factory
 
         return [
             'name' => fake()->name(),
-            'description' => fake()->text(),
+            'description' => fake()->sentence(),
             'parent_id' => $parentId
         ];
     }

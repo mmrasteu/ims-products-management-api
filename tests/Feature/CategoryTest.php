@@ -80,14 +80,21 @@ class CategoryTest extends TestCase
     public function test_update_category(): void
     {
         // Arrange
+        // Create a category using the factory
         $category = Category::factory()->create();
 
         // Act
-        $response = $this->put(route('update_category', $category->id), [
-            'name' => 'Updated Category Name'
-        ]);
+        // Send a PUT request to update the category
+        $updatedData = [
+            'name' => 'Updated Category Name',
+            'description' => 'Updated category description',
+            'parent_id' => 2, // Updated parent category ID
+        ];
+        
+        $response = $this->put(route('update_category', ['id' => $category->id]), $updatedData);
 
         // Assert
+        // Check that the response status is 200 OK and it contains the 'category' key in the JSON structure
         $response->assertStatus(200)->assertJsonStructure(['category']);
     }
 
