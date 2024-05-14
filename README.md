@@ -48,3 +48,7 @@ IMS es un proyecto de código abierto sin una licencia específica.
 ## Autoría
 
 Miguel Ángel Magrañal Rasteu
+
+## Menciones
+
+La plantilla para hacer un proyecto Laravel dockerizado es originaria del repositorio `https://github.com/refactorian/laravel-docker` 
