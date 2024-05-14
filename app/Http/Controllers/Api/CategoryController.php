@@ -11,7 +11,12 @@ use Illuminate\Support\Facades\Validator;
 class CategoryController extends Controller
 {   
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/categories",
+     *     summary="Obtener todas las categorías",
+     *     tags={"Categorías"},
+     *     @OA\Response(response="200", description="Listado de categorías"),
+     * )
      */
     public function index()
     {
@@ -23,6 +28,24 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/categories/filter",
+     *     summary="Filtrar categorías",
+     *     tags={"Categorías"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Categoria1"),
+     *             @OA\Property(property="description", type="string", example="Descripción de la categoría"),
+     *             @OA\Property(property="parent_id", type="integer", example=1),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Categorías filtradas"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     * )
+     */
     public function filter(Request $request)
     {
         // Define validation rules for filter fields
@@ -69,7 +92,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display a tree of the resource.
+     * @OA\Get(
+     *     path="/api/categories/tree",
+     *     summary="Obtener todas las categorías con su estructura de árbol",
+     *     tags={"Categorías"},
+     *     @OA\Response(response="200", description="Estructura de árbol de categorías"),
+     * )
      */
     public function indexTree()
     {
@@ -86,7 +114,23 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/categories",
+     *     summary="Crear una nueva categoría",
+     *     tags={"Categorías"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nueva Categoria"),
+     *             @OA\Property(property="description", type="string", example="Descripción de la nueva categoría"),
+     *             @OA\Property(property="parent_id", type="integer", example=1),
+     *         ),
+     *     ),
+     *     @OA\Response(response="201", description="Categoría creada con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="500", description="Error interno del servidor"),
+     * )
      */
     public function store(Request $request)
     {   
@@ -148,7 +192,20 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/categories/{id}",
+     *     summary="Obtener una categoría por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Categoría obtenida con éxito"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
      */
     public function show(string $id)
     {
@@ -168,6 +225,22 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/categories/{id}/products",
+     *     summary="Obtener todos los productos de una categoría por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Productos de la categoría obtenidos con éxito"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
+     */
     public function showProducts($id)
     {
         // Find the category by its ID
@@ -192,6 +265,22 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/categories/{id}/tree",
+     *     summary="Obtener una categoría con su estructura de árbol por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Categoría con su estructura de árbol obtenida con éxito"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
+     */
     public function showTree(string $id)
     {
         $category = Category::find($id);
@@ -212,7 +301,30 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/categories/{id}",
+     *     summary="Actualizar una categoría por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nueva Categoria"),
+     *             @OA\Property(property="description", type="string", example="Descripción actualizada de la categoría"),
+     *             @OA\Property(property="parent_id", type="integer", example=2),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Categoría actualizada con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
      */
     public function update(Request $request, $id)
     {   
@@ -258,6 +370,32 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/categories/{id}",
+     *     summary="Actualizar parcialmente una categoría por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nuevo nombre de categoría"),
+     *             @OA\Property(property="description", type="string", example="Descripción actualizada de la categoría"),
+     *             @OA\Property(property="parent_id", type="integer", example=2),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Categoría actualizada con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
+     */
     public function updatePartial(Request $request, $id)
     {
         // Find the category by its ID
@@ -299,10 +437,21 @@ class CategoryController extends Controller
         ], 200);
     }
 
-
-
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/categories/{id}",
+     *     summary="Eliminar una categoría por su ID",
+     *     tags={"Categorías"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Categoría eliminada con éxito"),
+     *     @OA\Response(response="404", description="Categoría no encontrada"),
+     * )
      */
     public function destroy(string $id)
     {   
