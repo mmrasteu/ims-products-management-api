@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Validator;
 class SupplierController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/suppliers",
+     *     summary="Obtener todos los proveedores",
+     *     tags={"Proveedores"},
+     *     @OA\Response(response="200", description="Listado de proveedores"),
+     * )
      */
     public function index()
     {
@@ -24,6 +29,32 @@ class SupplierController extends Controller
         return response()->json($data, 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/suppliers/filter",
+     *     summary="Filtrar proveedores",
+     *     tags={"Proveedores"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Proveedor1"),
+     *             @OA\Property(property="cif", type="string", example="CIF1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del proveedor"),
+     *             @OA\Property(property="email", type="string", format="email", example="proveedor@example.com"),
+     *             @OA\Property(property="phone", type="string", example="123456789"),
+     *             @OA\Property(property="address", type="string", example="Dirección del proveedor"),
+     *             @OA\Property(property="location", type="string", example="Localidad del proveedor"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="contact_name", type="string", example="Nombre del contacto"),
+     *             @OA\Property(property="contact_title", type="string", example="Título del contacto"),
+     *             @OA\Property(property="notes", type="string", example="Notas adicionales"),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Proveedores filtrados"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     * )
+     */
     public function filter(Request $request)
     {
         // Define validation rules for filter fields
@@ -109,9 +140,32 @@ class SupplierController extends Controller
         ], 200);
     }
 
-
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/suppliers",
+     *     summary="Crear un nuevo proveedor",
+     *     tags={"Proveedores"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nuevo Proveedor"),
+     *             @OA\Property(property="cif", type="string", example="CIF1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del nuevo proveedor"),
+     *             @OA\Property(property="email", type="string", format="email", example="nuevo@proveedor.com"),
+     *             @OA\Property(property="phone", type="string", example="123456789"),
+     *             @OA\Property(property="address", type="string", example="Dirección del nuevo proveedor"),
+     *             @OA\Property(property="location", type="string", example="Localidad del nuevo proveedor"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="contact_name", type="string", example="Nombre del contacto"),
+     *             @OA\Property(property="contact_title", type="string", example="Título del contacto"),
+     *             @OA\Property(property="notes", type="string", example="Notas adicionales"),
+     *         ),
+     *     ),
+     *     @OA\Response(response="201", description="Proveedor creado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="500", description="Error interno del servidor"),
+     * )
      */
     public function store(Request $request)
     {
@@ -192,7 +246,20 @@ class SupplierController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/suppliers/{id}",
+     *     summary="Obtener un proveedor por su ID",
+     *     tags={"Proveedores"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del proveedor",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Proveedor obtenido con éxito"),
+     *     @OA\Response(response="404", description="Proveedor no encontrado"),
+     * )
      */
     public function show(string $id)
     {
@@ -211,6 +278,22 @@ class SupplierController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/suppliers/{id}/products",
+     *     summary="Obtener todos los productos de un proveedor por su ID",
+     *     tags={"Proveedores"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del proveedor",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Productos del proveedor obtenidos con éxito"),
+     *     @OA\Response(response="404", description="Proveedor no encontrado"),
+     * )
+     */
     public function showProducts($id)
     {
         // Find the supplier by its ID
@@ -236,7 +319,38 @@ class SupplierController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/suppliers/{id}",
+     *     summary="Actualizar un proveedor por su ID",
+     *     tags={"Proveedores"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del proveedor",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Proveedor Actualizado"),
+     *             @OA\Property(property="cif", type="string", example="CIF1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del proveedor actualizada"),
+     *             @OA\Property(property="email", type="string", format="email", example="actualizado@proveedor.com"),
+     *             @OA\Property(property="phone", type="string", example="123456789"),
+     *             @OA\Property(property="address", type="string", example="Dirección del proveedor actualizada"),
+     *             @OA\Property(property="location", type="string", example="Localidad del proveedor actualizada"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="contact_name", type="string", example="Nombre del contacto actualizado"),
+     *             @OA\Property(property="contact_title", type="string", example="Título del contacto actualizado"),
+     *             @OA\Property(property="notes", type="string", example="Notas adicionales actualizadas"),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Proveedor actualizado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Proveedor no encontrado"),
+     * )
      */
     public function update(Request $request, $id)
     {   
@@ -287,6 +401,40 @@ class SupplierController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/suppliers/{id}",
+     *     summary="Actualizar parcialmente un proveedor por su ID",
+     *     tags={"Proveedores"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del proveedor",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Proveedor Actualizado"),
+     *             @OA\Property(property="cif", type="string", example="CIF1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del proveedor actualizada"),
+     *             @OA\Property(property="email", type="string", format="email", example="actualizado@proveedor.com"),
+     *             @OA\Property(property="phone", type="string", example="123456789"),
+     *             @OA\Property(property="address", type="string", example="Dirección del proveedor actualizada"),
+     *             @OA\Property(property="location", type="string", example="Localidad del proveedor actualizada"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="contact_name", type="string", example="Nombre del contacto actualizado"),
+     *             @OA\Property(property="contact_title", type="string", example="Título del contacto actualizado"),
+     *             @OA\Property(property="notes", type="string", example="Notas adicionales actualizadas"),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Proveedor actualizado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Proveedor no encontrado"),
+     * )
+     */
     public function updatePartial(Request $request, $id)
     {
         // Find the supplier by its ID
@@ -337,7 +485,20 @@ class SupplierController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/suppliers/{id}",
+     *     summary="Eliminar un proveedor por su ID",
+     *     tags={"Proveedores"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del proveedor",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Proveedor eliminado con éxito"),
+     *     @OA\Response(response="404", description="Proveedor no encontrado"),
+     * )
      */
     public function destroy(string $id)
     {   

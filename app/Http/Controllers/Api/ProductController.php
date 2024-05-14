@@ -8,10 +8,26 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Info(
+ *     title="API de Productos",
+ *     version="1.0.0",
+ *     description="API para gestionar productos",
+ *     @OA\Contact(
+ *         email="admin@example.com",
+ *         name="Equipo de desarrollo"
+ *     )
+ * )
+ */
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/products",
+     *     summary="Mostrar una lista de productos",
+     *     tags={"Productos"},
+     *     @OA\Response(response="200", description="Lista de productos"),
+     * )
      */
     public function index()
     {
@@ -24,7 +40,28 @@ class ProductController extends Controller
     }
 
     /**
-     * Filter products based on criteria.
+     * @OA\Post(
+     *     path="/api/products/filter",
+     *     summary="Filtrar productos basados en criterios",
+     *     tags={"Productos"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Producto1"),
+     *             @OA\Property(property="sku_code", type="string", example="SKU1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del producto"),
+     *             @OA\Property(property="price", type="number", format="float", example=10.99),
+     *             @OA\Property(property="cost_price", type="number", format="float", example=5.99),
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="additional_features", type="json", example={"feature1": "value1", "feature2": "value2"}),
+     *             @OA\Property(property="category_id", type="integer", example=1),
+     *             @OA\Property(property="supplier_id", type="integer", example=1),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Productos filtrados"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     * )
      */
     public function filter(Request $request)
     {
@@ -100,7 +137,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Get product's category
+     * @OA\Get(
+     *     path="/api/products/{id}/category",
+     *     summary="Obtener la categoría de un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Categoría del producto obtenida con éxito"),
+     *     @OA\Response(response="404", description="Producto o categoría no encontrada"),
+     * )
      */
     public function showCategory(string $id){
         $product = Product::find($id);
@@ -128,7 +178,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Get product's supplier
+     * @OA\Get(
+     *     path="/api/products/{id}/supplier",
+     *     summary="Obtener el proveedor de un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Proveedor del producto obtenido con éxito"),
+     *     @OA\Response(response="404", description="Producto o proveedor no encontrado"),
+     * )
      */
     public function showSupplier(string $id){
         $product = Product::find($id);
@@ -156,7 +219,29 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/products",
+     *     summary="Almacenar un nuevo producto en la base de datos",
+     *     tags={"Productos"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nuevo Producto"),
+     *             @OA\Property(property="sku_code", type="string", example="SKU1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del nuevo producto"),
+     *             @OA\Property(property="price", type="number", format="float", example=10.99),
+     *             @OA\Property(property="cost_price", type="number", format="float", example=5.99),
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="additional_features", type="json", example={"feature1": "value1", "feature2": "value2"}),
+     *             @OA\Property(property="category_id", type="integer", example=1),
+     *             @OA\Property(property="supplier_id", type="integer", example=1),
+     *         ),
+     *     ),
+     *     @OA\Response(response="201", description="Producto creado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="500", description="Error interno del servidor"),
+     * )
      */
     public function store(Request $request)
     {
@@ -208,7 +293,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/products/{id}",
+     *     summary="Mostrar un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Producto obtenido con éxito"),
+     *     @OA\Response(response="404", description="Producto no encontrado"),
+     * )
      */
     public function show(string $id)
     {
@@ -229,7 +327,36 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/products/{id}",
+     *     summary="Actualizar un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Producto Actualizado"),
+     *             @OA\Property(property="sku_code", type="string", example="SKU1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del producto actualizada"),
+     *             @OA\Property(property="price", type="number", format="float", example=19.99),
+     *             @OA\Property(property="cost_price", type="number", format="float", example=9.99),
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="additional_features", type="json", example={"feature1": "updated_value1", "feature2": "updated_value2"}),
+     *             @OA\Property(property="category_id", type="integer", example=2),
+     *             @OA\Property(property="supplier_id", type="integer", example=2),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Producto actualizado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Producto no encontrado"),
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -284,7 +411,36 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Patch(
+     *     path="/api/products/{id}",
+     *     summary="Actualizar parcialmente un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Producto Actualizado"),
+     *             @OA\Property(property="sku_code", type="string", example="SKU1234567"),
+     *             @OA\Property(property="description", type="string", example="Descripción del producto actualizada"),
+     *             @OA\Property(property="price", type="number", format="float", example=19.99),
+     *             @OA\Property(property="cost_price", type="number", format="float", example=9.99),
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="additional_features", type="json", example={"feature1": "updated_value1", "feature2": "updated_value2"}),
+     *             @OA\Property(property="category_id", type="integer", example=2),
+     *             @OA\Property(property="supplier_id", type="integer", example=2),
+     *         ),
+     *     ),
+     *     @OA\Response(response="200", description="Producto actualizado con éxito"),
+     *     @OA\Response(response="400", description="Error de validación"),
+     *     @OA\Response(response="404", description="Producto no encontrado"),
+     * )
      */
     public function updatePartial(Request $request, string $id)
     {
@@ -329,7 +485,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/products/{id}",
+     *     summary="Eliminar un producto por su ID",
+     *     tags={"Productos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Producto eliminado con éxito"),
+     *     @OA\Response(response="404", description="Producto no encontrado"),
+     * )
      */
     public function destroy(string $id)
     {
