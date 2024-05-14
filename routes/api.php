@@ -28,6 +28,7 @@ Route::get('/categories/tree', [CategoryController::class, 'indexTree'])->name('
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('category');
 Route::get('/categories/{id}/products', [CategoryController::class, 'showProducts'])->name('category_products');
 Route::get('/categories/{id}/tree', [CategoryController::class, 'showTree'])->name('category_tree');
+Route::post('/categories/filter', [CategoryController::class, 'filter'])->name('categories_filter');
 Route::post('/categories', [CategoryController::class, 'store'])->name('store_category');
 Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('update_category');
 Route::patch('/categories/{id}', [CategoryController::class, 'updatePartial'])->name('partial_update_category');
@@ -37,7 +38,8 @@ Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name(
 Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers');
 Route::get('/suppliers/{id}', [SupplierController::class, 'show'])->name('supplier');
 Route::get('/suppliers/{id}/products', [SupplierController::class, 'showProducts'])->name('supplier_products');
+Route::post('/suppliers/filter', [SupplierController::class, 'filter'])->name('suppliers_filter');
 Route::post('/suppliers', [SupplierController::class, 'store'])->name('store_supplier');
 Route::put('/suppliers/{id}', [SupplierController::class, 'update'])->name('update_supplier');
-Route::patch('/suppliers/{id}', [CategoryController::class, 'updatePartial'])->name('partial_update_supplier');
+Route::patch('/suppliers/{id}', [SupplierController::class, 'updatePartial'])->name('partial_update_supplier');
 Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy'])->name('delete_supplier');
