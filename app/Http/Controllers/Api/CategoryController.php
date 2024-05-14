@@ -273,7 +273,7 @@ class CategoryController extends Controller
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'name' => 'max:255',
+            'name' => 'string|max:255',
             'description' => 'nullable|string',
             'parent_id' => 'nullable|numeric|exists:categories,id'
         ]);

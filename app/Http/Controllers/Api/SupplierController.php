@@ -28,17 +28,17 @@ class SupplierController extends Controller
     {
         // Define validation rules for filter fields
         $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'cif' => 'string|max:9',
-            'description' => 'string|nullable',
-            'email' => 'email|nullable',
-            'phone' => 'numeric|nullable',
-            'address' => 'string|nullable',
-            'location' => 'string|nullable',
-            'zip_code' => 'numeric|nullable',
-            'contact_name' => 'string|nullable',
-            'contact_title' => 'string|nullable',
-            'notes' => 'string|nullable',
+            'name'                  => 'string|max:255',
+            'cif'                   => 'string|max:9',
+            'description'           => 'string|nullable',
+            'email'                 => 'email|nullable',
+            'phone'                 => 'nullable|numeric|min_digits:9|max_digits:10',
+            'address'               => 'string|nullable',
+            'location'              => 'string|nullable',
+            'zip_code'              => 'numeric|nullable',
+            'contact_name'          => 'string|nullable',
+            'contact_title'         => 'string|nullable',
+            'notes'                 => 'string|nullable'
         ]);
 
         // Handle validation errors
@@ -58,7 +58,45 @@ class SupplierController extends Controller
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
 
-        // Other filter conditions...
+        if ($request->filled('cif')) {
+            $query->where('cif', $request->input('cif'));
+        }
+
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->input('description') . '%');
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', $request->input('email'));
+        }
+
+        if ($request->filled('phone')) {
+            $query->where('phone', $request->input('phone'));
+        }
+
+        if ($request->filled('address')) {
+            $query->where('address', $request->input('address'));
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location', $request->input('location'));
+        }
+
+        if ($request->filled('zip_code')) {
+            $query->where('zip_code', $request->input('zip_code'));
+        }
+
+        if ($request->filled('contact_name')) {
+            $query->where('contact_name', $request->input('contact_name'));
+        }
+
+        if ($request->filled('contact_title')) {
+            $query->where('contact_title', $request->input('contact_title'));
+        }
+
+        if ($request->filled('notes')) {
+            $query->where('notes', 'like', '%' . $request->input('notes') . '%');
+        }
 
         // Execute the query and get filtered suppliers
         $filteredSuppliers = $query->get();
@@ -107,7 +145,7 @@ class SupplierController extends Controller
             'cif'                   => 'required|string|max:9',
             'description'           => 'nullable|string', 
             'email'                 => 'required|email',
-            'phone'                 => 'nullable|numeric',
+            'phone'                 => 'nullable|numeric|min_digits:9|max_digits:10',
             'address'               => 'nullable|string',
             'location'              => 'nullable|string',
             'zip_code'              => 'nullable|numeric',
@@ -210,7 +248,7 @@ class SupplierController extends Controller
             'cif'                   => 'string|max:9',
             'description'           => 'nullable|string', 
             'email'                 => 'nullable|email',
-            'phone'                 => 'nullable|numeric',
+            'phone'                 => 'nullable|numeric|min_digits:9|max_digits:10',
             'address'               => 'nullable|string',
             'location'              => 'nullable|string',
             'zip_code'              => 'nullable|numeric',
@@ -264,17 +302,17 @@ class SupplierController extends Controller
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'name'                  => 'required|string|max:255',  
-            'cif'                   => 'required|string|max:9',
-            'description'           => 'nullable|string', 
-            'email'                 => 'nullable|email',
-            'phone'                 => 'nullable|numeric',
-            'address'               => 'nullable|string',
-            'location'              => 'nullable|string',
-            'zip_code'              => 'nullable|numeric',
-            'contact_name'          => 'nullable|string',
-            'contact_title'         => 'nullable|string',
-            'notes'                 => 'nullable|string'
+            'name'                  => 'string|max:255',  
+            'cif'                   => 'string|max:9',
+            'description'           => 'string', 
+            'email'                 => 'email',
+            'phone'                 => 'nullable|numeric|min_digits:9|max_digits:10',
+            'address'               => 'string',
+            'location'              => 'string',
+            'zip_code'              => 'numeric',
+            'contact_name'          => 'string',
+            'contact_title'         => 'string',
+            'notes'                 => 'string'
         ]);
 
         // If validation fails, return an error

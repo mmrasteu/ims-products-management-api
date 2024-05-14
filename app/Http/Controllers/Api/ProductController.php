@@ -243,15 +243,15 @@ class ProductController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name'                  => 'required|max:255', 
-            'sku_code'              => 'required|max:255|unique:products', 
-            'description'           => 'nullable|string', 
-            'price'                 => 'required|numeric', 
-            'cost_price'            => 'required|numeric', 
-            'status'                => 'required|boolean', 
-            'additional_features'   => 'required|json',
-            'category_id'           => 'required|numeric',
-            'supplier_id'           => 'required|numeric'
+            'name'                  => 'string|max:255', 
+            'sku_code'              => 'string|max:255|unique:products', 
+            'description'           => 'string', 
+            'price'                 => 'numeric', 
+            'cost_price'            => 'numeric', 
+            'status'                => 'boolean', 
+            'additional_features'   => 'json',
+            'category_id'           => 'numeric',
+            'supplier_id'           => 'numeric'
         ]);
 
         if ($validator->fails()){
@@ -298,8 +298,8 @@ class ProductController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name'                  => 'max:255', 
-            'sku_code'              => 'max:255|unique:products,sku_code,' . $id, // Make sure to exclude the current product ID from unique rule
+            'name'                  => 'string|max:255', 
+            'sku_code'              => 'string|max:255|unique:products', 
             'description'           => 'string', 
             'price'                 => 'numeric', 
             'cost_price'            => 'numeric', 
@@ -318,7 +318,7 @@ class ProductController extends Controller
         }
 
         // Update product with validated data
-        $product->fill($request->validated());
+        $product->fill($validator->validated());
         $product->save();
 
         return response()->json([
