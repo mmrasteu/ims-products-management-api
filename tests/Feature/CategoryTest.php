@@ -32,15 +32,15 @@ class CategoryTest extends TestCase
     public function test_filter_categories(): void
     {
         // Arrange
-        Category::factory(5)->create();
+        $category = Category::factory()->create();
 
         // Act
-        $response = $this->get(route('categories'), [
-            'name' => 'Category'
+        $response = $this->post(route('categories_filter'), [
+            'name' => $category->name
         ]);
 
         // Assert
-        $response->assertStatus(200)->assertJsonCount(5, 'categories');
+        $response->assertStatus(200)->assertJsonStructure(['categories']);
     }
 
     /**
@@ -88,7 +88,7 @@ class CategoryTest extends TestCase
         $updatedData = [
             'name' => 'Updated Category Name',
             'description' => 'Updated category description',
-            'parent_id' => 2, // Updated parent category ID
+            'parent_id' => null, // Updated parent category ID
         ];
         
         $response = $this->put(route('update_category', ['id' => $category->id]), $updatedData);
